@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>The Evolution of Pittsburgh's River Bridges</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Load Mapbox library -->
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+
+    <!-- Load Leaflet Omnivore plugin -->
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+    <!-- Load jQuery library -->
+    <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
+
+    <!-- Load Simple Statistics library -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.min.js'></script>
+
+    <!-- Load Mapbox CSS -->
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
+
+    <!-- Load Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500,600' rel='stylesheet' type='text/css'>
+    
+    <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+    
+    <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: "Open Sans", sans-serif;
+            color: #4d4d4d;
+        }
+        
+        h1 {
+            padding: 8px 25px 8px 15px;
+            height: 25px;
+            color: #ffd401; /* Pittsburgh gold */
+            margin: 0;
+            background: #3d3d3d; 
+            font-weight: 400;
+            font-size: 1.3em;
+            text-align: left;
+            font-family: "Merriweather", serif;
+            border-bottom: 2px solid #3d3d3d;            
+        }
+        
+        h2 {
+            margin: 0;
+            padding: 8px 25px 0px 15px;
+            color: #3d3d3d;
+            font-weight: 500;
+            font-size: 1.1em;
+            text-align: left;
+            font-family: "Merriweather", serif;            
+        }
+        a {
+            color: #4d4d4d;
+        }
+        #map {
+            position: absolute;
+            top: 40px;
+            bottom: 0;
+            right: 0;
+            width: 67%;
+        }
+        
+        #side-panel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 33%;
+            background: #ffea80; /* light Pittsburgh gold */
+            border-right: 2px solid #3d3d3d;
+/*            overflow-y: scroll;*/
+            /* add a scroll bar if content extends beyond the height of the page */
+        }
+        
+        #side-panel p {
+            margin: 8px 0 4px;
+            padding: 0 25px 0 15px;
+            text-align: left;
+            font-size: 0.8em;
+        }
+        
+        #side-panel p:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        
+        #side-panel img {
+            float: right;
+            margin: 0 0 15px 15px;
+        }
+        
+        #legend {
+            position: absolute;
+            right: 15px;
+            bottom: 20px;
+            padding: 8px 15px;
+            background: whitesmoke;
+            border: 2px solid #3d3d3d;
+            border-radius: 3px;
+            color: #3d3d3d;
+            width: 160px;
+            height: 180px;
+        }
+        
+        #legend h3 {
+            text-align: left;
+            font-weight: 500;
+            margin: 10px 0 10px;
+            font-size: 1em;
+        }
+        
+        #info {
+            padding: 8px 15px;
+            background: whitesmoke;
+            border: 2px solid #3d3d3d;
+            border-radius: 3px;
+            color: #3d3d3d;
+            position: absolute;
+            font-size: 1em;
+            max-width: 300px;
+            display: none;
+            /* don't display until the user mouses over a county */
+            text-align: left;
+        }
+        
+        #info p {
+            margin: 3px 0 4px;
+            text-align: left;
+        }
+        
+        #info span:first-child {
+            font-size: 1.3em;
+            font-weight: 500;
+            text-align: left;
+        }
+        
+        #detailsPanel {
+            margin: 25px 0 0 0;          
+            max-height: 350px;
+            font-size: 0.9em;
+            /*display: none;  /* don't display until the user mouses over a bridge */
+        }       
+        
+        #detailsPanel p {
+            text-align: left;
+            padding: 0px 25px 0px 15px;
+        }
+        
+        #detailsPanel span:first-child {
+            font-weight: 500;
+            text-align: left;
+        }
+        
+        #ui-controls {
+            position: absolute;
+            width: 176px;
+            padding: 8px 15px 4px 15px;
+            background: white;
+            border-radius: 3px;
+            color: #3d3d3d;
+            top: 50px;
+            left: 36%;
+            border: solid 1px #999999;
+        }
+        
+        .year-slider {
+            width: 100%;
+        }
+        
+        #ui-controls .min {
+            float: left;
+        }
+        
+        #ui-controls .max {
+            float: right;
+        }
+        
+        #currentYearTitle {
+            margin: 0;
+            position: absolute;
+            left: 33%;
+            top: 0;
+            width: 100%;
+            background: #ffea80; /* Pittsburgh gold */
+            color: #3d3d3d;
+            border-left: 2px solid #3d3d3d;
+            font-weight: 600;
+            text-align: left;
+            font-family: "Merriweather", serif;   
+        }
+        
+        #currentYearTitle h1 {
+            background: #ffea80; /* Pittsburgh gold */
+            color: #3d3d3d;
+        }        
+        
+        label {
+            font-size: 1em;
+            font-weight: 400;
+            font-family: Merriweather, serif;
+        }        
+        
+        .choroplethLegend {         
+            position: absolute;
+            right: 5px;
+            top: 20px;
+            padding: 8px 15px;
+            background: whitesmoke;
+            border: 2px solid #3d3d3d;
+            border-radius: 3px;
+            color: #3d3d3d;
+            width: 200px;
+            height: 220px;
+            text-align: left;
+            font-family: "Work Sans", sans-serif;           
+        }
+        
+        .choroplethLegend h3 {
+            text-align: left;
+            font-weight: 500;
+            margin: 5px 0 10px;
+        }
+        
+        .choroplethLegend span {
+            width: 32px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+            border: 1px solid #252525;
+            opacity: 0.4;
+        }
+        
+        .choroplethLegend label:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+
+    <div id='side-panel'>
+
+        <h1>The Evolution of Pittsburgh's River Bridges</h1>
+
+        <p>This map is an interactive companion to the book, <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, by Todd Wilson, PE, and Helen Wilson, showcasing how the river bridges in Pittsburgh, Pennsylvania evolved from the wooden covered bridges of yesterday to those that define the skyline today.</p>
+        
+        <p>Scroll the slider through Pittsburgh's 200-year history to see when and where bridges first appeared and why the city became known as the "City of Bridges".</p>
+
+        <p>Bridge data and photos were acquired from <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, <a href="http://www.pghbridges.com" target="_blank">Bruce Cridlebaugh</a>, or Todd Wilson.</p>
+        
+        <!-- Create the details panel div, which will display the bridge name, year built and demolished, image, image source, and description -->
+        <div id="detailsPanel">
+            <h1>Name (Built - Demolished)</h1>
+            <img src="">
+            <p class="imageSource">Image Source</p>
+            <p>Description</p>
+        </div>
+        
+    </div>
+    
+    <div id="currentYearTitle">
+        <h1>Pittsburgh's River Bridges in <span>2016</span></h1>
+    </div>
+    
+    <!-- Create Range Slider Control -->
+    <div id="ui-controls">
+        <label>
+            <span class="min">1816</span>
+            <span class="max">2016</span>
+            <input type="range" min="1816" max="2016" value="2016" step="1" class="year-slider">
+        </label>
+    </div>
+
+    <!-- Create the div to store the choropleth legend for the county colors -->
+    <div id="choroplethLegend">
+        <h3>Bridge Type</h3>
+    </div>
+
+    <!-- Create the info window div, which will display the bridge name and its year built and demolished-->
+    <div id="info">
+        <p><span></span></p>
+    </div>
+
+    <script>
+        
+        // Default basemap tiles        
+        var Esri_WorldGrayCanvas = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16,
+        });
+        
+        var Esri_WorldGrayReference = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            minZoom: 13,
+            maxZoom: 16
+        });            
+        
+        // Historic map tiles
+        var Pitt1862 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1862/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 15,
+            maxZoom: 16,
+            tileSize: 1024,
+            opacity: .9
+        });          
+        
+        var Pitt1872 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1872/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 16,
+            maxZoom: 16,
+            tileSize: 1024,
+            opacity: .9
+        });        
+        
+        var Pitt1882 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1882/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 16,
+            maxZoom: 16,
+            tileSize: 1024,
+            opacity: .9
+        });
+        
+        var Pitt1890 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1890/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 16,
+            maxZoom: 16,
+            tileSize: 1024,
+            opacity: .9           
+        });         
+        
+        var Pitt1910 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1910/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 13,
+            maxZoom: 15,
+            tileSize: 1024,
+            opacity: .8           
+        });        
+        
+        var Pitt1939 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1939/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 13,
+            maxZoom: 16,
+            tileSize: 1024,
+        });
+        
+        var Pitt1957 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1957/MapServer/tile/{z}/{y}/{x}', {
+            //attribution: 'Tiles &copy; Chris Olsen, Esri',
+            zoomOffset: -13,
+            minZoom: 13,
+            maxZoom: 16,
+            tileSize: 1024,
+        });
+        
+        // Mapbox access token
+        L.mapbox.accessToken = 'pk.eyJ1Ijoic2tlZXRpZG90IiwiYSI6IjJHd3UxZDgifQ.aeE1dODYNEMRwHQZT1MrLA';
+
+        // Set the map options
+        var options = {
+            center: [40.43, -80], // centered in Pittsburgh
+            zoom: 12, // initial zoom
+            minZoom: 12,
+            maxZoom: 16,
+            maxBounds: L.latLngBounds([40.28,-80.15], [40.58,-79.85]) // panning bounds so the user doesn't pan too far away from Pittsburgh
+        }
+
+        // Create a new Leaflet map, passing map options, and assign it to the map variable
+        var map = L.map('map', options);
+        
+        // Add the basemap
+        map.addLayer(Esri_WorldGrayCanvas);
+        map.addLayer(Esri_WorldGrayReference);
+        //map.addLayer(Pitt1862);
+         
+        
+        // Define global variables
+        var bridges,
+            bridgeName = "Bridge",
+            bridgeType = "Type",
+            yearBuilt = "Year_Built",
+            yearDemolished = "Year_Demolished",
+            photoPath = "Photo_Path",
+            imageSource = "Image_Source",
+            description = "Notes";
+            currentYear = 2016;
+
+        // Use the Omnivore plugin to load the bridge points asynchronously and add them to the map if they have been properly loaded
+        var bridges = omnivore.csv('data/pittsburgh_bridges.csv')
+        
+            // If the data has been properly loaded, convert it to a traditional GeoJSON layer and call the drawMap() function
+            .on('ready', function(e) {
+                drawMap(e.target.toGeoJSON());
+            })
+            
+            // If the data cannot be loaded or parsed, log an error message to the console
+            .on('error', function(e) {
+                console.log(e.error[0].message);
+            })
+        
+
+        //Use JQuery's getJSON() method to load the city boundary data asynchronously
+        $.getJSON("data/city_border.geojson", function (data) {
+
+            // Create a Leaflet GeoJson layer for the city boundary and add it to the map
+            cityBorder = L.geoJson(data, {
+
+                // Create a style for the boundary
+                style: function (feature) {
+                    return {
+                        color: '#3d3d3d', // set stroke color
+                        weight: 2, // set stroke weight
+                        fillOpacity: 0, // override default fill opacity
+                        opacity: 1   
+                    };
+                }
+            }).addTo(map);
+            
+            // Move the city boundary to the bottom of the layer order
+            cityBorder.bringToBack();
+    
+        });
+        
+        function drawMap(bridges) {
+
+            // Create a Leaflet GeoJson layer for the bridges and add it to the map
+            bridges = L.geoJson(bridges, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        fillColor: 'white',
+                        fillOpacity: 1,
+                        color: 'black',
+                        weight: 1.25,
+                        opacity: 1,
+                        radius: 6
+                    });
+                }
+            });
+            
+            // Loop through each county (layer) in the GeoJson layer
+            bridges.eachLayer(function (layer) {
+                
+            // Create shorthand variables to access the layer properties
+            var props = layer.feature.properties;
+            yearBuilt = Number(props["Year_Built"]);
+            yearDemolished = Number(props["Year_Demolished"]);
+                
+                // If the bridge was built after the current year or demolished before the current year, hide it
+                if (yearBuilt > currentYear || (yearDemolished < currentYear && yearDemolished != "")) {
+                    layer.setStyle({
+                        fill: false,
+                        stroke: false
+                    });
+                }
+                
+                // Otherwise, the bridge existed during the current year, so display it and get its fill color, calling the getColor() method to determine the appropriate color based on its type
+                else {
+                    layer.setStyle({
+                        fill: true,
+                        stroke: true,
+                        fillColor: getColor(props[bridgeType])
+                    });
+                }
+                
+            });
+            
+            bridges.addTo(map);
+            
+            updateYear(bridges, currentYear);
+
+        }
+           
+        
+        // Symbolize the bridges based on their type        
+        function getColor(bridgeType) {
+            
+            if (bridgeType == "Through Truss" || bridgeType == "Deck Truss") {
+                return '#ff0000'; // red
+                
+            } else if (bridgeType == "Wooden Covered Truss") {
+                return '#ad661f'; // brown                
+            
+            } else if (bridgeType == "Arch") {
+                return '#ffd401'; // Pittsburgh gold
+                
+            } else if (bridgeType == "Suspension") {
+                return '#000099'; // blue
+                
+            } else if (bridgeType == "Steel Girder" || bridgeType == "Lattice Girder") {
+                return '#009933'; // green             
+                
+            } else if (bridgeType == "Aqueduct") {
+                return '#00cccc'; // aqua               
+                
+            }  else {
+                return '#666666';
+            }
+
+        }
+        
+        // When the user updates the slider, determine the current grade level, update the symbols based on the enrollment for the current grade, and update the grade label in the temporal legend
+        function updateYear(bridges, currentYear) {
+            
+            // Select the grade level label inside the grade div element's span tag
+            var output = $('#currentYearTitle h1 span');
+            
+            // Select the slider div element
+            $('.year-slider')
+            
+                // When the user updates the slider
+                .on('input change', function() {
+                
+                    // Determine the current grade level
+                    currentYear = $(this).val();
+                
+                    // Update the current year title to include the current year
+                    output.html(currentYear);
+                
+                    updateMap(bridges, currentYear);
+                });
+            
+
+          
+        }
+        
+        function updateMap(bridges, currentYear) {
+
+            // Loop through each county (layer) in the GeoJson layer
+            bridges.eachLayer(function (layer) {
+
+                // Create a shorthand variable to access the layer properties
+                var props = layer.feature.properties;
+                currentYear = Number(currentYear);
+                yearBuilt = Number(props["Year_Built"]);
+                yearDemolished = Number(props["Year_Demolished"]);
+                
+                // If the bridge was built after the current year or demolished before the current year, hide it
+                if (yearBuilt > currentYear || (yearDemolished < currentYear && yearDemolished != "")) {
+                    layer.setStyle({
+                        stroke: false,
+                        fill: false
+                    });
+                }
+                
+                // Otherwise, the bridge existed during the current year, so display it and get its fill color, calling the getColor() method to determine the appropriate color based on its type
+                else if( (yearBuilt < currentYear) && (yearDemolished > currentYear || yearDemolished == "") ){  
+                    layer.setStyle({
+                        stroke: true,
+                        fill: true,
+                        fillColor: getColor(props[bridgeType])
+                    }); 
+                }
+                
+            });
+        }
+
+        
+    </script>
+</body>
+
+</html>
