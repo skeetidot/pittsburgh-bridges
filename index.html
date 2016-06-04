@@ -230,28 +230,29 @@
             font-family: Merriweather, serif;
         }        
         
-        .bridgeTypeLegend {         
+        #bridgeTypeLegend {         
             position: absolute;
-            right: 5px;
-            top: 20px;
+            right: 15px;
+            bottom: 20px;
             padding: 8px 15px;
-            background: whitesmoke;
-            border: 2px solid #3d3d3d;
+            background: white;
+            border: solid 1px #999999;
             border-radius: 3px;
             color: #3d3d3d;
-            width: 200px;
-            height: 220px;
+            width: 160px;
+            height: 180px;
             text-align: left;
-            font-family: "Work Sans", sans-serif;           
+            font-family: "Merriweather", sans-serif;           
         }
         
-        .bridgeTypeLegend h3 {
+        #bridgeTypeLegend h3 {
             text-align: left;
             font-weight: 500;
-            margin: 5px 0 10px;
+            margin: 10px 0 10px;
+            font-size: 1em;
         }
         
-        .bridgeTypeLegend span {
+        #bridgeTypeLegend span {
             width: 32px;
             height: 20px;
             float: left;
@@ -260,7 +261,7 @@
             opacity: 0.4;
         }
         
-        .bridgeTypeLegend label:after {
+        #bridgeTypeLegend label:after {
             content: '';
             display: block;
             clear: both;
@@ -485,7 +486,8 @@
             
             // Call the updateYear() function to update the map as the user moves the year slider
             updateYear(bridges, currentYear);
-
+            
+            drawLegend();
         }
 
         // Symbolize the bridges based on their type        
@@ -523,18 +525,19 @@
             // Select the slider div element
             $('.year-slider')
             
-                // When the user updates the slider
-                .on('input change', function() {
-                
-                    // Determine the current year
-                    currentYear = $(this).val();
-                
-                    // Update the currentYearTitle div to display the current year
-                    output.html(currentYear);
-                
-                    updateMap(bridges, currentYear);
-                });
+            // When the user updates the slider
+            .on('input change', function() {
+
+                // Determine the current year
+                currentYear = $(this).val();
+
+                // Update the currentYearTitle div to display the current year
+                output.html(currentYear);
+
+                updateMap(bridges, currentYear);
+            });
         }
+
         
         // Update the bridges based on the currently selected year
         function updateMap(bridges, currentYear) {
@@ -563,13 +566,29 @@
                         fill: true,
                         fillColor: getColor(props[bridgeType])
                     }); 
+                                 
+                    if (currentYear-yearBuilt<=5) {
+                        layer.setStyle({
+                            radius: 9,
+                            weight: 4,
+                            color: 'yellow'
+                        });
+                    } else {
+                        layer.setStyle({
+                            radius: 6,
+                            weight: 1.25,
+                            color: 'black'
+                        });
+                    }
                 }
-                
-                createTooltip(bridges);
-                
-                createDetailsPanel(bridges);
+
                 
             });
+            
+            
+            createTooltip(bridges);
+                
+            createDetailsPanel(bridges);            
         }
         
         function createTooltip(bridges) {
@@ -585,31 +604,7 @@
 
                 // Set the year built and year demolished for the selected bridge
                 yearBuilt = Number(props["Year_Built"]);
-                yearDemolished = Number(props["Year_Demolished"])
-                
-                // When the user moves the mouse, position the tooltip next to the cursor
-                $(document).mousemove(function (e) {
-
-                    // First offset the tooltip above and to the right of the current cursor position
-                    tooltip.css({
-                        "left": e.pageX + 6, // X coordinate of the cursor + 6px
-                        "top": e.pageY - tooltip.height() - 15 // Y coordinate of the cursor - the height of the tooltip - 15px
-                    });
-
-                    // If the tooltip crashes into the top of the page, flip it to appear below the current cursor position
-                    if (tooltip.offset().top < 4) {
-                        tooltip.css({
-                            "top": e.pageY + 15 // Y coordinate of the  cursor + 15px
-                        });
-                    }
-
-                    // If the tooltip crashes into the right of the page, flip it to appear to the left the current cursor position
-                    if (tooltip.offset().left + tooltip.width() >= $(document).width() - 40) {
-                        tooltip.css({
-                            "left": e.pageX - tooltip.width() - 30 // X coordinate of the cursor - the width of the tooltip - 30px
-                        });
-                    }
-                });     
+                yearDemolished = Number(props["Year_Demolished"])  
 
                 // Select and display the tooltip div
                 tooltip.show();
@@ -636,6 +631,48 @@
                 tooltip.hide();
             });
             
+                // When the user moves the mouse, position the tooltip next to the cursor
+                $(document).mousemove(function (e) {
+
+                    // First offset the tooltip above and to the right of the current cursor position
+                    tooltip.css({
+                        "left": e.pageX + 6, // X coordinate of the cursor + 6px
+                        "top": e.pageY - tooltip.height() - 15 // Y coordinate of the cursor - the height of the tooltip - 15px
+                    });
+
+                    // If the tooltip crashes into the top of the page, flip it to appear below the current cursor position
+                    if (tooltip.offset().top < 4) {
+                        tooltip.css({
+                            "top": e.pageY + 15 // Y coordinate of the  cursor + 15px
+                        });
+                    }
+
+                    // If the tooltip crashes into the right of the page, flip it to appear to the left the current cursor position
+                    if (tooltip.offset().left + tooltip.width() >= $(document).width() - 40) {
+                        tooltip.css({
+                            "left": e.pageX - tooltip.width() - 30 // X coordinate of the cursor - the width of the tooltip - 30px
+                        });
+                    }
+                });  
+            
+
+
+
+                    $.fn.disableSelection = function() {
+                      return this.each(function() {
+                        $(this).attr('unselectable', 'on')
+                        .css({
+                          '-moz-user-select':'none',
+                          '-webkit-user-select':'none',
+                          'user-select':'none',
+                          '::selection':'none',
+                        })
+                        .each(function() {
+                          this.onselectstart = function() { return false; };
+                        });
+                      });
+                    };            
+
         }
         
         function createDetailsPanel(bridges) {
@@ -669,18 +706,80 @@
                     // Populate the heading in the details panel with the bridge name for selected feature
                     $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
                     
-                    // Build the image source and alt text for the selected feature and populate it in the image of the details panel
-                    $('#detailsPanel p').children('img').attr("src", props.Photo_Path);
-                    $('#detailsPanel p').children('img').attr("alt_text", "Image of " + props.Bridge);
+                    if (props.Photo_Path != "None") {
+                        
+                        // Show the image and image source if it was previously hidden
+                        $('#detailsPanel p').children('img').show();
+                        $('#detailsPanel p').children('img').show();
+                        $('.imageSource').show(); 
+                        
+                        // Build the image source and alt text for the selected feature and populate it in the image of the details panel
+                        $('#detailsPanel p').children('img').attr("src", props.Photo_Path);
+                        $('#detailsPanel p').children('img').attr("alt_text", "Image of " + props.Bridge);
+
+                        // Populate the image source in the details panel
+                        $('.imageSource').text("Image Source: " + props.Image_Source); 
+                        
+                    }
                     
-                    // Populate the image source in the details panel
-                    $('.imageSource').text("Image Source: " + props.Image_Source);
+                    else {
+                        // Hide the image and image source
+                        $('#detailsPanel p').children('img').hide();
+                        $('#detailsPanel p').children('img').hide();
+                        $('.imageSource').hide();    
+                    }
                     
                     // Populate the description in the details panel
                     $('.description').text(props.Notes);
 
                 });                
         }
+        
+        // Create the legend    
+        function drawLegend() {
+
+            // Select the legend svg element
+            var legend = $('#bridgeTypeLegend');
+
+            // Create an object called "circles", use Simple Statistics to calculate the max, median, and min values from the allRadii array, and store those values in the circles object
+            var circles = {
+                metalTruss: getColor("Through Truss"),
+                woodenCoveredTruss: getColor("Wooden Covered Truss"),
+                arch: getColor("Arch"),
+                suspension: getColor("Suspension"),
+                girder: getColor("Steel Girder"),
+                aqueduct: getColor("Aqueduct")
+            }
+            
+            console.log(circles);
+
+            // Create an empty string callled "svgCircles" to store the HTML and SVG that will draw the proportional circles and their labels in the legend
+            var svgCircles = '';
+
+            // Loop through the circles object to get the radius and raw value of the max, median, and min values for the current grade
+            for (var circle in circles) {
+
+                // Circle SVG Variables:
+                // cx = how far the element is moved right from the left edge of the div (use negative numbers to move left)
+                // cy = how far the element is moved up from the the top edge of the div (use negative numbers to move down)
+                // r = radius
+                // stroke = stroke color
+                // stroke-width = stroke width, in pixels
+                // fill = circle fill color           
+
+                // Concatenate an SVG circle element using the current radius (max, median, or min)
+                //svgCircles += '<circle cx="' + 0 + '" cy="' + 0 + '" r="' + 50 + '" fill="'+ circles[circle] + '" stroke-width="1.25" stroke="black" />';
+            }
+            
+            console.log(svgCircles);
+            
+            legend.html("Bridge Type");
+
+            // Add the svgCircles string as HTML to the legend div
+            //legend.html(svgCircles);
+        }
+
+
 
         
     </script>
