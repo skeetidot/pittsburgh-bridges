@@ -162,7 +162,7 @@
         }        
         
         #detailsPanel #photo {
-            width: 75%;
+            width: 366px;
             float: none;
             margin-left: 12.5%;
             margin-top: 4px;
@@ -722,7 +722,7 @@
                 });
 
                 // If the tooltip crashes into the top of the page, flip it to appear below the current cursor position
-                if (tooltip.offset().top < 4) {
+                if (tooltip.offset().top < 50) {
                     tooltip.css({
                         "top": e.pageY + 15 // Y coordinate of the  cursor + 15px
                     });
