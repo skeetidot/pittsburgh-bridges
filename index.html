@@ -563,7 +563,13 @@
             updateYear(bridges, currentYear);
             
             // Call the drawLegend() function to draw the legend
-            drawLegend();           
+            drawLegend();
+            
+            // Create and display the tooltip when the user hovers over a bridge
+            createTooltip(bridges);
+                
+            // Create and display the details panel when the user clicks a bridge              
+            createDetailsPanel(bridges);            
             
         }
 
@@ -580,7 +586,7 @@
                 return '#ffd401'; // Pittsburgh gold
                 
             } else if (bridgeType == "Suspension") {
-                return '#000099'; // blue
+                return '#0040ff'; // blue
                 
             } else if (bridgeType == "Steel Girder" || bridgeType == "Lattice Girder") {
                 return '#009933'; // green                        
@@ -607,8 +613,12 @@
 
                 // Update the currentYearTitle div to display the current year
                 output.html(currentYear);
-
+                
+                // Update the map to show the bridges in the current year
                 updateMap(bridges, currentYear);
+                
+                // Hide the details panel
+                $('#detailsPanel').hide();
             });
         }
         
@@ -657,11 +667,7 @@
                 }                
             });
             
-            // Create and display the tooltip when the user hovers over a bridge
-            createTooltip(bridges);
-                
-            // Create and display the details panel when the user clicks a bridge              
-            createDetailsPanel(bridges);             
+          
         }
         
         // Create and display the tooltip when the user hovers over a bridge
@@ -734,7 +740,20 @@
         function createDetailsPanel(bridges) {
             // When the user clicks one of the bridges
                 bridges.on('click', function (e) {
-
+                    
+                    // Call the updateMap() function to remove the highlighting from the previously selected bridge
+                    updateMap(bridges, currentYear);
+                    
+                    // Increase the circle size for the selected bridge and add a highlight
+                    e.layer.setStyle({
+                        radius: 15,
+                        weight: 4,
+                        color: 'aqua'
+                    });
+                    
+                    // Bridge the selected bridge to the bfront
+                    e.layer.bringToFront();
+                   
                     // Access the properties of the selected feature and assign it to the props variable
                     var props = e.layer.feature.properties
                     
@@ -784,6 +803,9 @@
                     // When the user clicks the close icon, close the details panel
                     close.on('click', function (e) {
                         $('#detailsPanel').hide();
+                        
+                        // Call the updateMap() function to remove the highlighting from the selected bridge
+                        updateMap(bridges, currentYear);
                     });
 
                 });                
