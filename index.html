@@ -583,10 +583,7 @@
                 return '#000099'; // blue
                 
             } else if (bridgeType == "Steel Girder" || bridgeType == "Lattice Girder") {
-                return '#009933'; // green             
-                
-            } else if (bridgeType == "Aqueduct") {
-                return '#00cccc'; // aqua               
+                return '#009933'; // green                        
                 
             } else {
                 return '#666666'; // gray
@@ -757,7 +754,7 @@
                     $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
                     
                     // If there is a photo for the selected feature
-                    if (props.Photo_Path != "None") {
+                    if (props.Photo_Path !== "None") {
                         
                         // Show the image and image source if it was previously hidden
                         $('#photo').show();
@@ -774,7 +771,7 @@
                     // Otherwise, there is no photo for the selected feature
                     else {
                         // Hide the image and image source
-                        $('#photo').children('img').hide();
+                        $('#photo').hide();
                         $('.imageSource').hide();    
                     }
                     
@@ -819,10 +816,6 @@
                 girder: {
                     name: "Girder",
                     color: getColor("Steel Girder")
-                },
-                aqueduct: {
-                    name: "Aqueduct",
-                    color: getColor("Aqueduct")
                 }
             };
 
