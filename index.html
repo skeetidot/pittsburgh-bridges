@@ -152,6 +152,7 @@
         }
         
         #close {
+            cursor: pointer;
             width: 16px;
             height: 16px;
             left: 29%;
@@ -623,7 +624,7 @@
         }
         
         // Update the bridges based on the currently selected year
-        function updateMap(bridges, currentYear) { 
+        function updateMap(bridges, currentYear) {           
 
             // Loop through each feature in the bridges GeoJson layer
             bridges.eachLayer(function (layer) {
@@ -740,9 +741,12 @@
         function createDetailsPanel(bridges) {
             // When the user clicks one of the bridges
                 bridges.on('click', function (e) {
+
+                    // Get the current year
+                    currentYear = $('.year-slider').val(); 
                     
-                    // Call the updateMap() function to remove the highlighting from the previously selected bridge
-                    updateMap(bridges, currentYear);
+                    // Call the updateMap() function to remove the highlighting from the previously selected bridge and redraw the map for the current year
+                    updateMap(bridges, currentYear);                    
                     
                     // Increase the circle size for the selected bridge and add a highlight
                     e.layer.setStyle({
@@ -751,13 +755,13 @@
                         color: 'aqua'
                     });
                     
-                    // Bridge the selected bridge to the bfront
+                    // Bring the selected bridge to the front
                     e.layer.bringToFront();
                    
                     // Access the properties of the selected feature and assign it to the props variable
                     var props = e.layer.feature.properties
                     
-                    // Set the year built and year demolished for the selected bridge
+                    // Get the year built and year demolished for the selected bridge
                     yearBuilt = Number(props["Year_Built"]);
                     yearDemolished = Number(props["Year_Demolished"])                    
 
@@ -798,7 +802,7 @@
                     $('.description').text(props.Notes);
                     
                     // Select the close icon
-                    close = $('#close')    
+                    close = $('#close');
                     
                     // When the user clicks the close icon, close the details panel
                     close.on('click', function (e) {
@@ -860,30 +864,28 @@
 
         }
 
-        function search() {
-            // get the value of the search input field
-            var searchString = $('#search').val().toLowerCase();
-
-
-                // Determine the current year
-                searchString = $('#search').val().toLowerCase();
-            
-                console.log(searchString);
-
-                // Loop through each feature in the bridges GeoJson layer
-                bridges.eachLayer(function (layer) {
-
-                    bridgeName = layer.feature.properties.Bridge;
-
-                    if (bridgeName.indexOf(searchString) !== -1) {
-                        console.log(bridgeName);
-                        return layer.feature;
-                    }
-
-                });
-
-        
-        }
+//        function search() {
+//            // get the value of the search input field
+//            var searchString = $('#search').val().toLowerCase();
+//
+//                // Determine the current year
+//                searchString = $('#search').val().toLowerCase();
+//            
+//                console.log(searchString);
+//
+//                // Loop through each feature in the bridges GeoJson layer
+//                bridges.eachLayer(function (layer) {
+//
+//                    bridgeName = layer.feature.properties.Bridge;
+//
+//                    if (bridgeName.indexOf(searchString) !== -1) {
+//                        console.log(bridgeName);
+//                        return layer.feature;
+//                    }
+//
+//                });
+//
+//        }
 
         
     </script>
