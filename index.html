@@ -59,9 +59,11 @@
             text-align: left;
             font-family: "Merriweather", serif;            
         }
+        
         a {
             color: #4d4d4d;
         }
+        
         #map {
             position: absolute;
             top: 40px;
@@ -96,26 +98,6 @@
         #side-panel img {
             float: right;
             margin: 0 0 15px 15px;
-        }
-        
-        #legend {
-            position: absolute;
-            right: 15px;
-            bottom: 20px;
-            padding: 8px 15px;
-            background: whitesmoke;
-            border: 2px solid #3d3d3d;
-            border-radius: 3px;
-            color: #3d3d3d;
-            width: 160px;
-            height: 180px;
-        }
-        
-        #legend h3 {
-            text-align: left;
-            font-weight: 500;
-            margin: 10px 0 10px;
-            font-size: 1em;
         }
         
         #tooltip {
@@ -225,22 +207,20 @@
         }        
         
         label {
-            font-size: 1em;
             font-weight: 400;
             font-family: Merriweather, serif;
+            width: 200px;
         }        
         
         #bridgeTypeLegend {         
             position: absolute;
             right: 15px;
             bottom: 20px;
-            padding: 8px 15px;
+            padding: 4px 4px 0px 15px;
             background: white;
             border: solid 1px #999999;
             border-radius: 3px;
             color: #3d3d3d;
-            width: 160px;
-            height: 180px;
             text-align: left;
             font-family: "Merriweather", sans-serif;           
         }
@@ -248,17 +228,45 @@
         #bridgeTypeLegend h3 {
             text-align: left;
             font-weight: 500;
-            margin: 10px 0 10px;
+            margin: 10px 0 4px;
             font-size: 1em;
         }
         
+        #bridgeTypeLegend h3.status {
+            text-align: left;
+            font-weight: 500;
+            margin: -4px 0 4px;
+            font-size: 1em;
+        }
+
         #bridgeTypeLegend span {
-            width: 32px;
-            height: 20px;
-            float: left;
-            margin: 0 10px 4px 0;
-            border: 1px solid #252525;
-            opacity: 0.4;
+            position: absolute;
+        }
+        
+        #bridgeTypeLegend span {
+            border-radius: 50%;
+            border: 1px solid black;
+            width: 10px;
+            height: 10px;
+            margin-top: 6px;
+            margin-right: 4px;            
+        }
+
+        .highlightCircle {
+            border-radius: 50%;
+            border: 1px solid black;
+            width: 15px;
+            height: 15px;
+            margin-top: 6px;
+            margin-right: 4px;            
+        }  
+        
+        #bridgeTypeLegend label {
+            text-align: left;
+            font-weight: 400;
+            margin-left: 25px;
+            font-family: "Open Sans", sans-serif;            
+            font-size: 0.8em;
         }
         
         #bridgeTypeLegend label:after {
@@ -266,6 +274,21 @@
             display: block;
             clear: both;
         }
+        
+        #bridgeTypeLegend note {
+            text-align: left;
+            font-weight: 400;
+            margin-top: 25px;
+            margin-left: 25px;
+            font-family: "Open Sans", sans-serif;            
+            font-size: 0.8em;
+        }
+        
+        #bridgeTypeLegend note:after {
+            content: '';
+            display: block;
+            clear: both;
+        }        
 
     </style>
 </head>
@@ -399,11 +422,11 @@
 
         // Set the map options
         var options = {
-            center: [40.43, -80], // centered in Pittsburgh
+            center: [40.43, -79.97], // centered in Pittsburgh
             zoom: 12, // initial zoom
             minZoom: 12,
             maxZoom: 16,
-            maxBounds: L.latLngBounds([40.28,-80.15], [40.58,-79.85]) // panning bounds so the user doesn't pan too far away from Pittsburgh
+            maxBounds: L.latLngBounds([40.28,-80.12], [40.58,-79.82]) // panning bounds so the user doesn't pan too far away from Pittsburgh
         }
 
         // Create a new Leaflet map, passing map options, and assign it to the map variable
@@ -537,7 +560,6 @@
                 updateMap(bridges, currentYear);
             });
         }
-
         
         // Update the bridges based on the currently selected year
         function updateMap(bridges, currentYear) {
@@ -591,6 +613,7 @@
             createDetailsPanel(bridges);            
         }
         
+        // Create and display the tooltip when the user hovers over a bridge
         function createTooltip(bridges) {
             
             // Select the tooltip div
@@ -631,50 +654,32 @@
                 tooltip.hide();
             });
             
-                // When the user moves the mouse, position the tooltip next to the cursor
-                $(document).mousemove(function (e) {
+            // When the user moves the mouse, position the tooltip next to the cursor
+            $(document).mousemove(function (e) {
 
-                    // First offset the tooltip above and to the right of the current cursor position
+                // First offset the tooltip above and to the right of the current cursor position
+                tooltip.css({
+                    "left": e.pageX + 6, // X coordinate of the cursor + 6px
+                    "top": e.pageY - tooltip.height() - 15 // Y coordinate of the cursor - the height of the tooltip - 15px
+                });
+
+                // If the tooltip crashes into the top of the page, flip it to appear below the current cursor position
+                if (tooltip.offset().top < 4) {
                     tooltip.css({
-                        "left": e.pageX + 6, // X coordinate of the cursor + 6px
-                        "top": e.pageY - tooltip.height() - 15 // Y coordinate of the cursor - the height of the tooltip - 15px
+                        "top": e.pageY + 15 // Y coordinate of the  cursor + 15px
                     });
+                }
 
-                    // If the tooltip crashes into the top of the page, flip it to appear below the current cursor position
-                    if (tooltip.offset().top < 4) {
-                        tooltip.css({
-                            "top": e.pageY + 15 // Y coordinate of the  cursor + 15px
-                        });
-                    }
-
-                    // If the tooltip crashes into the right of the page, flip it to appear to the left the current cursor position
-                    if (tooltip.offset().left + tooltip.width() >= $(document).width() - 40) {
-                        tooltip.css({
-                            "left": e.pageX - tooltip.width() - 30 // X coordinate of the cursor - the width of the tooltip - 30px
-                        });
-                    }
-                });  
-            
-
-
-
-                    $.fn.disableSelection = function() {
-                      return this.each(function() {
-                        $(this).attr('unselectable', 'on')
-                        .css({
-                          '-moz-user-select':'none',
-                          '-webkit-user-select':'none',
-                          'user-select':'none',
-                          '::selection':'none',
-                        })
-                        .each(function() {
-                          this.onselectstart = function() { return false; };
-                        });
-                      });
-                    };            
-
+                // If the tooltip crashes into the right of the page, flip it to appear to the left the current cursor position
+                if (tooltip.offset().left + tooltip.width() >= $(document).width() - 40) {
+                    tooltip.css({
+                        "left": e.pageX - tooltip.width() - 30 // X coordinate of the cursor - the width of the tooltip - 30px
+                    });
+                }
+            });          
         }
         
+        // Create and display the details panel when the user clicks a bridge
         function createDetailsPanel(bridges) {
             // When the user clicks one of the bridges
                 bridges.on('click', function (e) {
@@ -738,45 +743,53 @@
         // Create the legend    
         function drawLegend() {
 
-            // Select the legend svg element
+            // Select the legend div element
             var legend = $('#bridgeTypeLegend');
 
-            // Create an object called "circles", use Simple Statistics to calculate the max, median, and min values from the allRadii array, and store those values in the circles object
+            // Create an object called "circles" and store the legend name and color
             var circles = {
-                metalTruss: getColor("Through Truss"),
-                woodenCoveredTruss: getColor("Wooden Covered Truss"),
-                arch: getColor("Arch"),
-                suspension: getColor("Suspension"),
-                girder: getColor("Steel Girder"),
-                aqueduct: getColor("Aqueduct")
-            }
+                metalTruss: {
+                    name: "Metal Truss",
+                    color: getColor("Through Truss")
+                },
+                woodenCoveredTruss: {
+                    name: "Wooden Covered Truss",
+                    color: getColor("Wooden Covered Truss")
+                },
+                arch: {
+                    name: "Arch",
+                    color: getColor("Arch")
+                },
+                suspension: {
+                    name: "Suspension",
+                    color: getColor("Suspension")
+                },
+                girder: {
+                    name: "Girder",
+                    color: getColor("Steel Girder")
+                },
+                aqueduct: {
+                    name: "Aqueduct",
+                    color: getColor("Aqueduct")
+                }
+            };
+
+            // Create an empty string called "legendContent" to store the HTML that will draw the circles and their labels in the legend
+            var legendContent = '';
             
-            console.log(circles);
-
-            // Create an empty string callled "svgCircles" to store the HTML and SVG that will draw the proportional circles and their labels in the legend
-            var svgCircles = '';
-
             // Loop through the circles object to get the radius and raw value of the max, median, and min values for the current grade
             for (var circle in circles) {
+                
+                legendContent += '<span class="circle" style="background:' + circles[circle].color + ';"></span> ' + '<label>' + circles[circle].name + '</label>';  
 
-                // Circle SVG Variables:
-                // cx = how far the element is moved right from the left edge of the div (use negative numbers to move left)
-                // cy = how far the element is moved up from the the top edge of the div (use negative numbers to move down)
-                // r = radius
-                // stroke = stroke color
-                // stroke-width = stroke width, in pixels
-                // fill = circle fill color           
-
-                // Concatenate an SVG circle element using the current radius (max, median, or min)
-                //svgCircles += '<circle cx="' + 0 + '" cy="' + 0 + '" r="' + 50 + '" fill="'+ circles[circle] + '" stroke-width="1.25" stroke="black" />';
             }
             
-            console.log(svgCircles);
-            
-            legend.html("Bridge Type");
+            legendContent += '<h3 class="status">Bridge Status</h3>';
+            legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built in past 5 years</note>';  
 
-            // Add the svgCircles string as HTML to the legend div
-            //legend.html(svgCircles);
+            // Add the legendContent string as HTML to the legend div
+            legend.append(legendContent);
+
         }
 
 
