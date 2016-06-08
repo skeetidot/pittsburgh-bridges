@@ -14,6 +14,10 @@
 
     <!-- Load jQuery library -->
     <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
+    
+    <!-- Load jQuery UI library with autocomplete function -->
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>  
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">    
 
     <!-- Load Simple Statistics library -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.min.js'></script>
@@ -23,7 +27,6 @@
 
     <!-- Load Google Fonts -->    
     <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
-    
     <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet' type='text/css'>
 
     <style>
@@ -128,6 +131,9 @@
             float: right;
             margin: 0 0 15px 15px;
         }
+        
+    
+    /* Details Panel */
         
         #detailsPanel {
             margin: 25px 0 0 0;          
@@ -250,18 +256,24 @@
         .search-ui {
             position: absolute;
             top: 10px;
-            right: 70px;
-            width: 250px;
+            left: 75%;
+            width: 500px;
             z-index: 1000;
         }
         
-        #btnSearch {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 60px;
-            z-index: 1000;
+        .ui-widget {
+            font-family: "Open Sans", sans-serif;
+            font-size: 0.8em;
+            color: #3d3d3d;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-width: 250px;
+            max-height: 300px;
         }
+        
+        .ui-autocomplete-input {
+            width: 250px;
+        }        
         
     /* Marker List */
         
@@ -381,8 +393,10 @@
 
 <body>
 
+    <!-- Create the map div -->
     <div id='map'></div>
 
+    <!-- Create the side panel div -->
     <div id='side-panel'>
         <h1>The Evolution of Pittsburgh's River Bridges</h1>
 
@@ -414,12 +428,12 @@
         </div>  
     </div>
     
-    <!-- Create current year heading with initial year of 2016 -->
+    <!-- Create the current year heading with initial year of 2016 -->
     <div id="currentYearTitle">
         <h1>Pittsburgh's River Bridges in <span>2016</span></h1>
     </div>
     
-    <!-- Create range slider control -->
+    <!-- Create the range slider control -->
     <div id="ui-controls">
         <label>
             <span class="min">1816</span>
@@ -427,10 +441,13 @@
             <input type="range" min="1816" max="2016" value="2016" step="1" class="year-slider">
         </label>
     </div>
-    
-    <!-- Create search control -->    
-<!--    <input id='search' class='search-ui' placeholder='Search for bridges in the current year' />-->
 
+    <!-- Create the search box -->
+    <div class="search-ui" width="500px">
+        <label for="search">Search: </label>
+        <input id="search">
+    </div>
+    
     <!-- Create the div to store the legend for the bridge types -->
     <div id="bridgeTypeLegend">
         <h3>Bridge Type</h3>
@@ -530,9 +547,7 @@
         }
 
         // Create a new Leaflet map, passing map options, and assign it to the map variable
-        var map = L.mapbox.map('map', 'mapbox.light', options);
-        
-        $('#search').keyup(search);        
+        var map = L.mapbox.map('map', 'mapbox.light', options);      
 
         // Add the basemap
         map.addLayer(Esri_WorldGrayCanvas);
@@ -553,7 +568,8 @@
             imageSource = "Image_Source",
             description = "Notes";
             currentYear = 2016;
-            searchString = "";        
+            bridgeArray = [];
+            selectedBridge = '';
         
         // Use the Omnivore plugin to load the bridge points asynchronously and add them to the map if they have been properly loaded
         var bridges = omnivore.csv('data/pittsburgh_bridges.csv', null, L.mapbox.featureLayer())
@@ -604,11 +620,17 @@
                         radius: 6
                     });
                 }
-            }).addTo(map);  
+            }).addTo(map);
+            
+            // Build the bridge list for the search dropdown
+            buildBridgeList(bridges);
+            
+            // Call the search() function to autocomplete the list of bridges as the user types
+            search(bridges, bridgeArray, currentYear);            
             
             // Call the updateMap() function to draw the bridges which existed in the current year (2016)
             updateMap(bridges, currentYear);
-            
+
             // Call the updateYear() function to update the map as the user moves the year slider
             updateYear(bridges, currentYear);
             
@@ -625,7 +647,26 @@
             });
             
             // Create and display the marker list
-            createMarkerList(bridges);
+            createMarkerList(bridges, currentYear);         
+        }
+        
+        // Populate the bridge list array with the bridge names in the GeoJson layer
+        function buildBridgeList(bridges) {
+            
+            // Loop through each feature in the bridges GeoJson layer
+            bridges.eachLayer(function (layer) {
+
+                // Create a shorthand variable to access the layer properties
+                var props = layer.feature.properties;
+                bridgeName = props.Bridge;
+                
+                // Push the current bridge name into the bridge array
+                bridgeArray.push(props.Bridge);
+                
+            });
+            
+            // Return the bridge array so it can be used in the search dropdown
+            return bridgeArray;
         }
 
         // Symbolize the bridges based on their type        
@@ -695,13 +736,13 @@
                 bridgeType = props.Type;
                 
                 // If the bridge was built after the current year or demolished before the current year, hide it
-                if (yearBuilt > currentYear || (yearDemolished < currentYear && yearDemolished != "")) {
+                if (yearBuilt > currentYear || (yearDemolished < currentYear && yearDemolished != "")) {    
                     layer.setStyle({
                         stroke: false,
                         fill: false
                     });
                 }
-
+                
                 // Otherwise, the bridge existed during the current year, so display it and get its fill color, calling the getColor() method to determine the appropriate color based on its type
                 else {
                     layer.setStyle({
@@ -923,6 +964,7 @@
 
             }
             
+            // Build the bridge status section of the legend content
             legendContent += '<h3 class="status">Bridge Status</h3>';
             legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built in past 5 years</note>';  
 
@@ -931,22 +973,41 @@
 
         }
 
-        function search() {
-            // get the value of the search input field
-            var searchString = $('#search').val().toLowerCase();
+        // Search for bridges. Autocomplete the list as the user types. When the user selects a bridge, zoom to the selected bridge, highlight it, and open its details panel.
+        function search(bridges, bridgeArray, currentYear) {
             
-            console.log(searchString);
+            // Create the autocomplete dropdown list with the bridge names in the bridgeArray
+            $("#search").autocomplete({
+              source: bridgeArray
+            });
             
-            bridges.setFilter(showBridges);
+            // When the user chooses a value from the dropdown list
+            $("#search").on("autocompleteselect", function(event, ui) {
+                
+                // Assign the current value in the search box as the selectedBridge
+                selectedBridge = ui.item.value;
+                
+                // Loop through all the bridges
+                bridges.eachLayer(function(layer) {
+                    
+                    // If the bridge name matches the one in the search box
+                    if(layer.feature.properties.Bridge == selectedBridge) {
+                        
+                        // Create a shorthand variable to access the layer properties
+                        props = layer.feature.properties;
 
-            function showBridges(feature) {
-                return feature.properties.Bridge
-                    .toLowerCase()
-                    .indexOf(searchString) !== -1;
-            }
+                        // Call the getBridgeDetails() function to build the bridge details panel for the selected bridge
+                        getBridgeDetails(bridges, currentYear, layer, props);
+                    }
+                });
+                
+                // Clear the value in the search box
+                ui.item.value = '';
+            
+            });
         }
-        
-        function createMarkerList(bridges) {
+    
+        function createMarkerList(bridges, currentYear) {
 
             // Loop through all the bridges
             bridges.eachLayer(function(layer) {
@@ -968,97 +1029,107 @@
                 var item = markerList.appendChild(document.createElement('li'));
                 item.innerHTML = bridgeName + " (" + yearBuilt + "-" + yearDemolished + ")";
                 item.onclick = function(e) {
-                    map.setView(layer.getLatLng(), 13);
-                    currentYear = layer.feature.properties["Year_Built"];
                     
-                    // Select the current year label inside the currentYearTitle div element's span tag
-                    var output = $('#currentYearTitle h1 span');
-
-                    // Update the value of the year slider to the current year
-                    $('.year-slider').val(currentYear);
-
-                    // Update the currentYearTitle div to display the current year
-                    output.html(currentYear);
-
-                    // Update the map to show the bridges in the current year
-                    updateMap(bridges, currentYear);
+                    // Call the getBridgeDetails() function to build the bridge details panel for the selected bridge
+                    getBridgeDetails(bridges, currentYear, layer, props);
                     
-                // Hide the marker list
-                $('#markerListPanel').hide();
-
-                // Display the details panel
-                $('#detailsPanel').show();                      
-
-                // Increase the circle size for the selected bridge and add a highlight        
-                layer.setStyle({
-                    radius: 15,
-                    weight: 4,
-                    color: 'aqua'
-                });
-
-                // Bring the selected bridge to the front
-                layer.bringToFront();
-
-                // Access the properties of the selected feature and assign it to the props variable
-                var props = layer.feature.properties
-
-                // Get the year built and year demolished for the selected bridge
-                yearBuilt = Number(props["Year_Built"]);
-                yearDemolished = Number(props["Year_Demolished"])           
-
-                // If there is no year demolished, display the year demolished as "present"
-                if (yearDemolished == 0) {
-                    yearDemolished = "present";
-                }                    
-
-                // Populate the heading in the details panel with the bridge name for the selected feature
-                $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
-
-                // If there is a photo for the selected feature
-                if (props.Photo_Path !== "None") {
-
-                    // Show the image and image source if it was previously hidden
-                    $('#photo').show();
-                    $('.imageSource').show(); 
-
-                    // Build the image source and alt text for the selected feature and populate it in the image of the details panel
-                    $('#photo').attr("src", props.Photo_Path);
-                    $('#photo').attr("alt_text", "Image of " + props.Bridge);
-
-                    // Populate the image source in the details panel
-                    $('.imageSource').text("Image Source: " + props.Image_Source);     
-                }
-
-                // Otherwise, there is no photo for the selected feature
-                else {
-                    // Hide the image and image source
-                    $('#photo').hide();
-                    $('.imageSource').hide();    
-                }
-
-                // Populate the description in the details panel
-                $('.description').text(props.Notes);
-
-                // Select the close icon
-                close = $('#closeButton');
-
-                // When the user clicks the close icon
-                close.on('click', function (e) {
-
-                    // Close the details panel
-                    $('#detailsPanel').hide();
-
-                    // Show the marker list
-                    $('#markerListPanel').show();                       
-
-                    // Call the updateMap() function to remove the highlighting from the selected bridge
-                    updateMap(bridges, currentYear);
-                });                    
-                    
-                    
-
                 };
             });
+            
+        }
+        
+        // Build the bridge details panel for the selected bridge, if accessed from the bridge list or search dropdown
+        function getBridgeDetails(bridges, currentYear, layer, props) {
+                            
+            // Zoom to the selected bridge at zoom level 13
+            map.setView(layer.getLatLng(), 13);
+
+            // Set the current year as the year the selected bridge was built
+            currentYear = layer.feature.properties["Year_Built"];
+
+            // Select the current year label inside the currentYearTitle div element's span tag
+            var output = $('#currentYearTitle h1 span');
+
+            // Update the value of the year slider to the current year
+            $('.year-slider').val(currentYear);
+
+            // Update the currentYearTitle div to display the current year
+            output.html(currentYear);
+
+            // Update the map to show the bridges in the current year
+            updateMap(bridges, currentYear);
+
+            // Hide the marker list
+            $('#markerListPanel').hide();
+
+            // Display the details panel
+            $('#detailsPanel').show();                      
+
+            // Increase the circle size for the selected bridge and add a highlight        
+            layer.setStyle({
+                radius: 15,
+                weight: 4,
+                color: 'aqua'
+            });
+
+            // Bring the selected bridge to the front
+            layer.bringToFront();
+
+            // Access the properties of the selected feature and assign it to the props variable
+            var props = layer.feature.properties;
+
+            // Get the year built and year demolished for the selected bridge
+            yearBuilt = Number(props["Year_Built"]);
+            yearDemolished = Number(props["Year_Demolished"])           
+
+            // If there is no year demolished, display the year demolished as "present"
+            if (yearDemolished == 0) {
+                yearDemolished = "present";
+            }                    
+
+            // Populate the heading in the details panel with the bridge name for the selected feature
+            $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
+
+            // If there is a photo for the selected feature
+            if (props.Photo_Path !== "None") {
+
+                // Show the image and image source if it was previously hidden
+                $('#photo').show();
+                $('.imageSource').show(); 
+
+                // Build the image source and alt text for the selected feature and populate it in the image of the details panel
+                $('#photo').attr("src", props.Photo_Path);
+                $('#photo').attr("alt_text", "Image of " + props.Bridge);
+
+                // Populate the image source in the details panel
+                $('.imageSource').text("Image Source: " + props.Image_Source);     
+            }
+
+            // Otherwise, there is no photo for the selected feature
+            else {
+                // Hide the image and image source
+                $('#photo').hide();
+                $('.imageSource').hide();    
+            }
+
+            // Populate the description in the details panel
+            $('.description').text(props.Notes);
+
+            // Select the close icon
+            close = $('#closeButton');
+
+            // When the user clicks the close icon
+            close.on('click', function (e) {
+
+                // Close the details panel
+                $('#detailsPanel').hide();
+
+                // Show the marker list
+                $('#markerListPanel').show();                       
+
+                // Call the updateMap() function to remove the highlighting from the selected bridge
+                updateMap(bridges, currentYear);
+            });                    
             
         }
 
