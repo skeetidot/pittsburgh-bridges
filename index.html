@@ -139,15 +139,14 @@
             margin: 25px 0 0 0;          
             font-size: 0.9em;
             display: none;  /* don't display until the user clicks a bridge */
-            max-height: 70%;
+            height: 70%;
         }
         
         #detailsPanelContent {
-            max-height: 475px;
-            overflow-y: auto;            
+            overflow-y: auto;
         }
         
-        section{
+        #section{
             display:inline-block;
             width:100%;
             background: #3d3d3d;
@@ -195,7 +194,8 @@
         
         #detailsPanel p .description {
             margin-top: -10px;
-            font-size: 1.1em;          
+            font-size: 1.1em; 
+            padding-bottom: 8px;
         }
         
         
@@ -278,13 +278,12 @@
     /* Marker List */
         
         #markerListPanel {
-            margin: 15px 0 0 0;          
+            margin: 25px 0 0 0;          
             font-size: 0.9em;
-            max-height: 70%;          
+            height: 70%;          
         }
         
         #markerListPanelContent {
-            max-height: 500px;
             left: -50px;
             overflow-y: auto;            
         }        
@@ -398,14 +397,16 @@
 
     <!-- Create the side panel div -->
     <div id='side-panel'>
-        <h1>The Evolution of Pittsburgh's River Bridges</h1>
+        <div id="intro">
+            <h1>The Evolution of Pittsburgh's River Bridges</h1>
 
-        <p>This map is an interactive companion to the book, <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, by Todd Wilson, PE, and Helen Wilson, showcasing how the river bridges in Pittsburgh, Pennsylvania evolved from the wooden covered bridges of yesterday to those that define the skyline today.</p>
-        
-        <p>Scroll the slider through Pittsburgh's 200-year history to see when and where bridges first appeared and why the city became known as the "City of Bridges".</p>
+            <p>This map is an interactive companion to the book, <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, by Todd Wilson, PE, and Helen Wilson, showcasing how the river bridges in Pittsburgh, Pennsylvania evolved from the wooden covered bridges of yesterday to those that define the skyline today.</p>
 
-        <p>Bridge data and photos were acquired from <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, <a href="http://www.pghbridges.com" target="_blank">Bruce Cridlebaugh</a>, or Todd Wilson.</p>
-        
+            <p>Scroll the slider through Pittsburgh's 200-year history to see when and where bridges first appeared and why the city became known as the "City of Bridges".</p>
+
+            <p>Bridge data and photos were acquired from <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, <a href="http://www.pghbridges.com" target="_blank">Bruce Cridlebaugh</a>, or Todd Wilson.</p>        
+        </div>
+
         <!-- Create the marker list div, which will display all bridges from all years -->
         <div id = markerListPanel>
             <h1>All Bridges</h1>
@@ -416,10 +417,10 @@
         
         <!-- Create the details panel div, which will display the bridge name, year built and demolished, image, image source, and description -->
         <div id="detailsPanel">
-            <section>
+            <div id="section">
                 <img id="closeButton" src="icons/close.png" alt_text="close details panel">
                 <h1>Name (Built - Demolished)</h1>              
-            </section>
+            </div>
             <div id="detailsPanelContent">
                 <p><img id="photo" src=""></p>
                 <p><span class="imageSource">Image Source</span></p>
@@ -458,7 +459,7 @@
         <p><span></span> <span></span></p>
     </div>
 
-    <script>
+    <script>     
         
         // Default basemap tiles        
         var Esri_WorldGrayCanvas = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
@@ -722,7 +723,7 @@
         }
         
         // Update the bridges based on the currently selected year
-        function updateMap(bridges, currentYear) {           
+        function updateMap(bridges, currentYear) {            
 
             // Loop through each feature in the bridges GeoJson layer
             bridges.eachLayer(function (layer) {
@@ -835,7 +836,7 @@
         }
         
         // Create and display the details panel when the user clicks a bridge
-        function createDetailsPanel(bridges, e) {
+        function createDetailsPanel(bridges, e) {          
 
             // Get the current year
             currentYear = $('.year-slider').val(); 
@@ -905,6 +906,9 @@
             // Populate the description in the details panel
             $('.description').text(props.Notes);
             
+            // Set the height of the details panel content based on the document height, minus the height of the intro section, minus the height of the details panel heading, minus 40px            
+            $('#detailsPanelContent').height($(document).height()-$('#intro').height()-$('#section').height()-40);              
+            
             // Select the close icon
             close = $('#closeButton');
 
@@ -920,7 +924,7 @@
                 // Call the updateMap() function to remove the highlighting from the selected bridge
                 updateMap(bridges, currentYear);
             });
-                            
+            
         }                        
         
         // Create the legend    
@@ -1007,7 +1011,10 @@
             });
         }
     
-        function createMarkerList(bridges, currentYear) {
+        function createMarkerList(bridges, currentYear) {        
+        
+            // Set the height of the marker list panel content based on the document height, minus the height of the intro section, minus the height of the marker list panel heading, minus 50px
+            $('#markerListPanelContent').height($(document).height()-$('#intro').height()-$('#markerListPanel h1').height()-50);                          
 
             // Loop through all the bridges
             bridges.eachLayer(function(layer) {
@@ -1035,7 +1042,7 @@
                     
                 };
             });
-            
+
         }
         
         // Build the bridge details panel for the selected bridge, if accessed from the bridge list or search dropdown
