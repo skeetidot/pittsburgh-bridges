@@ -473,68 +473,6 @@
             maxZoom: 16
         });            
         
-//        // Historic map tiles
-//        var Pitt1862 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1862/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 15,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//            opacity: .9
-//        });          
-//        
-//        var Pitt1872 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1872/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 16,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//            opacity: .9
-//        });        
-//        
-//        var Pitt1882 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1882/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 16,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//            opacity: .9
-//        });
-//        
-//        var Pitt1890 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1890/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 16,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//            opacity: .9           
-//        });         
-//        
-//        var Pitt1910 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1910/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 13,
-//            maxZoom: 15,
-//            tileSize: 1024,
-//            opacity: .8           
-//        });        
-//        
-//        var Pitt1939 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1939/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 13,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//        });
-//        
-//        var Pitt1957 = L.tileLayer('http://peoplemaps.esri.com/arcgis/rest/services/Pittsburgh/Pitt1957/MapServer/tile/{z}/{y}/{x}', {
-//            //attribution: 'Tiles &copy; Chris Olsen, Esri',
-//            zoomOffset: -13,
-//            minZoom: 13,
-//            maxZoom: 16,
-//            tileSize: 1024,
-//        });
-        
         // Set Mapbox access token
         L.mapbox.accessToken = 'pk.eyJ1Ijoic2tlZXRpZG90IiwiYSI6IjJHd3UxZDgifQ.aeE1dODYNEMRwHQZT1MrLA';
 
@@ -553,7 +491,6 @@
         // Add the basemap
         map.addLayer(Esri_WorldGrayCanvas);
         map.addLayer(Esri_WorldGrayReference);
-        //map.addLayer(Pitt1862);
         
         // Initialize the marker list        
         var markerList = document.getElementById('marker-list');        
