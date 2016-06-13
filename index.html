@@ -144,6 +144,7 @@
         
         #detailsPanelContent {
             overflow-y: auto;
+            padding-bottom: 10px;
         }
         
         #section{
@@ -195,7 +196,7 @@
         #detailsPanel p .description {
             margin-top: -10px;
             font-size: 1.1em; 
-            padding-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         
@@ -256,7 +257,7 @@
         .search-ui {
             position: absolute;
             top: 10px;
-            left: 75%;
+            left: 79%;
             width: 500px;
             z-index: 1000;
         }
@@ -285,7 +286,8 @@
         
         #markerListPanelContent {
             left: -50px;
-            overflow-y: auto;            
+            overflow-y: auto; 
+            margin-bottom: 25px;            
         }        
 
         #marker-list {        
@@ -404,7 +406,9 @@
 
             <p>Scroll the slider through Pittsburgh's 200-year history to see when and where bridges first appeared and why the city became known as the "City of Bridges".</p>
 
-            <p>Bridge data and photos were acquired from <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, <a href="http://www.pghbridges.com" target="_blank">Bruce Cridlebaugh</a>, or Todd Wilson.</p>        
+            <p>Bridge data and photos were acquired from <a href="http://www.amazon.com/Pittsburghs-Bridges-Images-America-Wilson/dp/1467134244" target="_blank"><i>Pittsburgh's Bridges (Images of America)</i></a>, <a href="http://www.pghbridges.com" target="_blank">Bruce Cridlebaugh</a>, or Todd Wilson.</p>
+            
+            <p>Map developed by <a href="http://skeetidot.github.io" target="_blank">Lauren Winkler</a>.</p>
         </div>
 
         <!-- Create the marker list div, which will display all bridges from all years -->
@@ -843,8 +847,8 @@
             // Populate the description in the details panel
             $('.description').text(props.Notes);
             
-            // Set the height of the details panel content based on the document height, minus the height of the intro section, minus the height of the details panel heading, minus 40px            
-            $('#detailsPanelContent').height($(document).height()-$('#intro').height()-$('#section').height()-40);              
+            // Set the height of the details panel content based on the document height, minus the height of the intro section, minus the height of the details panel heading, minus 65px            
+            $('#detailsPanelContent').height($(document).height()-$('#intro').height()-$('#section').height()-65);              
             
             // Select the close icon
             close = $('#closeButton');
@@ -950,8 +954,8 @@
     
         function createMarkerList(bridges, currentYear) {        
         
-            // Set the height of the marker list panel content based on the document height, minus the height of the intro section, minus the height of the marker list panel heading, minus 50px
-            $('#markerListPanelContent').height($(document).height()-$('#intro').height()-$('#markerListPanel h1').height()-50);                          
+            // Set the height of the marker list panel content based on the document height, minus the height of the intro section, minus the height of the marker list panel heading, minus 75px
+            $('#markerListPanelContent').height($(document).height()-$('#intro').height()-$('#markerListPanel h1').height()-75);                          
 
             // Loop through all the bridges
             bridges.eachLayer(function(layer) {
