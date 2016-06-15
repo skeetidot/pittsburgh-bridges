@@ -19,8 +19,8 @@
     <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
     
     <!-- Load jQuery UI library with autocomplete function -->
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>  
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">    
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>  
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css">    
 
     <!-- Load Simple Statistics library -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.min.js'></script>
@@ -88,7 +88,7 @@
             color: #3d3d3d;
             position: absolute;
             font-size: .8em;
-            max-width: 500px;
+            max-width: 325px;
             display: none; /* don't display until the user mouses over a bridge */
             text-align: left;
         }
@@ -121,7 +121,7 @@
             margin: 8px 0 4px;
             padding: 0 25px 0 15px;
             text-align: left;
-            font-size: 0.8em;
+            font-size: 0.825em;
         }
         
         #side-panel p:after {
@@ -129,20 +129,12 @@
             display: block;
             clear: both;
         }
-        
-/*
-        #side-panel img {
-            float: right;
-            margin: 0 0 15px 15px;
-        }
-        
-*/
     
     /* Details Panel */
         
         #detailsPanel {
             margin: 25px 0 0 0;          
-            font-size: 0.9em;
+            font-size: 0.925em;
             display: none;  /* don't display until the user clicks a bridge */
             height: 70%;
         }
@@ -170,7 +162,7 @@
             cursor: pointer;
             width: 16px;
             height: 16px;
-            left: 29%;
+            left: 31%;
             display: inline;
             padding-top: 12px;
             position: fixed;
@@ -182,8 +174,8 @@
         }        
         
         #detailsPanel p .imageSource {
-            margin-left: 12.5%;
-            margin-top: -10px;
+            margin-left: 6.5%;
+            margin-top: -20x;
             font-size: 0.77em;
         }
         
@@ -194,14 +186,17 @@
         }
         
         #detailsPanel #photo {
-            width: 92%;
+            width: 82%;
             margin: 15px auto;
+            margin-bottom: -5px;
             padding: 0;
             display: block;
             border-radius: 3px;
             border: solid 1px #3d3d3d;
             color: #3d3d3d;
         }
+        
+        
     /* Year Slider */
         
         #ui-controls {
@@ -211,8 +206,8 @@
             background: white;
             border-radius: 3px;
             color: #3d3d3d;
-            bottom: 10px;
-            left: 34%;
+            top: 50px;
+            left: 36%;
             border: solid 1px #999999;
         }
         
@@ -258,9 +253,10 @@
 
         .search-ui {
             position: absolute;
-            top: 8px;
+            top: 7px;
             right: 15px;
             z-index: 1000;
+            font-family: "Open Sans", sans-serif;            
         }
         
         .ui-widget {
@@ -275,13 +271,14 @@
         
         .ui-autocomplete-input {
             width: 250px;
+            font-size: 0.9em;
         }   
 
     /* Marker List */
         
         #markerListPanel {
             margin: 25px 0 0 0;          
-            font-size: 0.9em;
+            font-size: 0.925em;
             height: 70%;          
         }
         
@@ -460,7 +457,7 @@
 
     <!-- Create the tooltip div, which will display the bridge name and its year built and demolished when the user hovers over a bridge -->
     <div id="tooltip">
-        <p><span></span> <span></span></p>
+        <p><span></span> <br><span></span></p>
     </div>
 
     <script>     
@@ -486,11 +483,11 @@
             zoom: 12, // initial zoom
             minZoom: 12,
             maxZoom: 16,
-            maxBounds: L.latLngBounds([40.28,-80.12], [40.58,-79.82]) // panning bounds so the user doesn't pan too far away from Pittsburgh
+            maxBounds: L.latLngBounds([40.28,-80.12], [40.58,-79.82]), // panning bounds so the user doesn't pan too far away from Pittsburgh
         }
 
         // Create a new Leaflet map, passing map options, and assign it to the map variable
-        var map = L.mapbox.map('map', 'mapbox.light', options);      
+        var map = L.mapbox.map('map', 'mapbox.light', options);        
 
         // Add the basemap
         map.addLayer(Esri_WorldGrayCanvas);
@@ -909,9 +906,12 @@
 
             }
             
+            // Select the current year label inside the currentYearTitle div element's span tag
+            output = $('#currentYearTitle h1 span');
+            
             // Build the bridge status section of the legend content
             legendContent += '<h3 class="status">Bridge Status</h3>';
-            legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built in past 5 years</note>';  
+            legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built within 5 years of selected year</note>';  
 
             // Add the legendContent string as HTML to the legend div
             legend.append(legendContent);
@@ -923,12 +923,12 @@
             
             var $search = $('#search');
             
-            // clear value when user goes to search
+            // Clear the default search text when user goes to search
             $search.focus(function(){
                 $(this).val('');
             });
             
-            // replace devault search value text
+            // Restore the default search text when the user focuses off of the search box
             $search.focusout(function() {
                 $(this).val('Search by bridge name');
             })
