@@ -204,7 +204,8 @@
     /* Marker List */
         
         #markerListPanel {
-            position: absolute;            
+            position: absolute; 
+            width: 100%;
             margin: 20px 0 0 0;          
             height: 70%;          
         }
@@ -976,12 +977,12 @@
         function createMarkerList(bridges, currentYear) {        
         
             // Set the height of the marker list panel content based on the window height, minus the height of the intro section, minus the height of the marker list panel heading, minus padding values
-            $('#markerListPanelContent').height($(window).height()-$('#intro').height()-$('#markerListPanel h1').height()-42);
+            $('#markerListPanelContent').height($(window).height()-$('#intro').height()-$('#markerListPanel h1').height()-42);              
             
             // Recalculate the height of the marker list panel content if the window is resized
             window.onresize = function() {
                 $('#markerListPanelContent').height($(window).height()-$('#intro').height()-$('#markerListPanel h1').height()-42);
-            }               
+            } 
 
             // Loop through all the bridges
             bridges.eachLayer(function(layer) {
