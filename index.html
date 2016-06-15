@@ -790,19 +790,7 @@
             currentYear = $('.year-slider').val(); 
 
             // Call the updateMap() function to remove the highlighting from the previously selected bridge and redraw the map for the current year
-            updateMap(bridges, currentYear);
-
-            // Hide the marker list
-            $('#markerListPanel').hide();
-
-            // Display the details panel
-            $('#detailsPanel').show();                      
-
-            // Hide the marker list
-            $('#markerListPanel').hide();
-
-            // Display the details panel
-            $('#detailsPanel').show();   
+            updateMap(bridges, currentYear);                   
             
             // Increase the circle size for the selected bridge and add a highlight        
             e.layer.setStyle({
@@ -828,14 +816,6 @@
 
             // Populate the heading in the details panel with the bridge name for the selected feature
             $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
-            
-            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
-            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42); 
-            
-            // Recalculate the height of the details panel content if the window is resized
-            window.onresize = function() {
-                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
-            }
 
             // If there is a photo for the selected feature
             if (props.Photo_Path !== "None") {
@@ -860,7 +840,21 @@
             }
 
             // Populate the description in the details panel
-            $('.description').text(props.Notes);         
+            $('.description').text(props.Notes);
+            
+            // Hide the marker list
+            $('#markerListPanel').hide();
+
+            // Display the details panel
+            $('#detailsPanel').show();
+            
+            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
+            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42); 
+            
+            // Recalculate the height of the details panel content if the window is resized
+            window.onresize = function() {
+                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+            }            
 
             // Select the close icon
             close = $('#closeButton');
@@ -1037,13 +1031,7 @@
             output.html(currentYear);
 
             // Update the map to show the bridges in the current year
-            updateMap(bridges, currentYear);
-
-            // Hide the marker list
-            $('#markerListPanel').hide();
-
-            // Display the details panel
-            $('#detailsPanel').show();                      
+            updateMap(bridges, currentYear);                  
 
             // Increase the circle size for the selected bridge and add a highlight        
             layer.setStyle({
@@ -1068,15 +1056,7 @@
             }                    
 
             // Populate the heading in the details panel with the bridge name for the selected feature
-            $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
-            
-            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
-            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
-
-            // Recalculate the height of the details panel content if the window is resized
-            window.onresize = function() {
-                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
-            }            
+            $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");           
 
             // If there is a photo for the selected feature
             if (props.Photo_Path !== "None") {
@@ -1101,7 +1081,21 @@
             }
 
             // Populate the description in the details panel
-            $('.description').text(props.Notes);
+            $('.description').text(props.Notes);            
+            
+            // Hide the marker list
+            $('#markerListPanel').hide();
+
+            // Display the details panel
+            $('#detailsPanel').show(); 
+            
+            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
+            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+
+            // Recalculate the height of the details panel content if the window is resized
+            window.onresize = function() {
+                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+            }            
 
             // Select the close icon
             close = $('#closeButton');
