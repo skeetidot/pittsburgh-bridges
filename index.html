@@ -5,6 +5,9 @@
     <meta charset=utf-8 />
     <title>The Evolution of Pittsburgh's River Bridges</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    <!-- Load Normalize CSS -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
 
     <!-- Load Mapbox library -->
     <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
@@ -127,11 +130,13 @@
             clear: both;
         }
         
+/*
         #side-panel img {
             float: right;
             margin: 0 0 15px 15px;
         }
         
+*/
     
     /* Details Panel */
         
@@ -170,21 +175,10 @@
             padding-top: 12px;
             position: fixed;
         }        
-        
-        #detailsPanel #photo {
-            width: 366px;
-            float: none;
-            margin-left: 12.5%;
-            margin-top: 4px;
-            margin-bottom: 0px;
-            border-radius: 3px;
-            border: solid 1px #3d3d3d;
-            color: #3d3d3d;
-        }
             
         #detailsPanel p {
             text-align: left;
-            margin: 8px 0px 0px;          
+            margin: 8px 0px 0px; 
         }        
         
         #detailsPanel p .imageSource {
@@ -199,7 +193,15 @@
             margin-bottom: 10px;
         }
         
-        
+        #detailsPanel #photo {
+            width: 92%;
+            margin: 15px auto;
+            padding: 0;
+            display: block;
+            border-radius: 3px;
+            border: solid 1px #3d3d3d;
+            color: #3d3d3d;
+        }
     /* Year Slider */
         
         #ui-controls {
@@ -209,8 +211,8 @@
             background: white;
             border-radius: 3px;
             color: #3d3d3d;
-            top: 50px;
-            left: 36%;
+            bottom: 10px;
+            left: 34%;
             border: solid 1px #999999;
         }
         
@@ -256,9 +258,8 @@
 
         .search-ui {
             position: absolute;
-            top: 10px;
-            left: 79%;
-            width: 500px;
+            top: 8px;
+            right: 15px;
             z-index: 1000;
         }
         
@@ -274,8 +275,8 @@
         
         .ui-autocomplete-input {
             width: 250px;
-        }        
-        
+        }   
+
     /* Marker List */
         
         #markerListPanel {
@@ -426,7 +427,7 @@
                 <h1>Name (Built - Demolished)</h1>              
             </div>
             <div id="detailsPanelContent">
-                <p><img id="photo" src=""></p>
+                <img id="photo" src="">
                 <p><span class="imageSource">Image Source</span></p>
                 <p><span class="description">Description</span></p>
             </div>
@@ -449,8 +450,7 @@
 
     <!-- Create the search box -->
     <div class="search-ui" width="500px">
-        <label for="search">Search: </label>
-        <input id="search">
+        <input id="search" value="Search by bridge name">
     </div>
     
     <!-- Create the div to store the legend for the bridge types -->
@@ -920,6 +920,18 @@
 
         // Search for bridges. Autocomplete the list as the user types. When the user selects a bridge, zoom to the selected bridge, highlight it, and open its details panel.
         function search(bridges, bridgeArray, currentYear) {
+            
+            var $search = $('#search');
+            
+            // clear value when user goes to search
+            $search.focus(function(){
+                $(this).val('');
+            });
+            
+            // replace devault search value text
+            $search.focusout(function() {
+                $(this).val('Search by bridge name');
+            })
             
             // Create the autocomplete dropdown list with the bridge names in the bridgeArray
             $("#search").autocomplete({
