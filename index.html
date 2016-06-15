@@ -77,6 +77,10 @@
             width: 67%;
         }
         
+        .leaflet-container .leaflet-control-attribution {
+            background-color: rgba(235,235,235,.75);
+        }
+        
         
     /* Tooltip */
         
@@ -87,7 +91,7 @@
             border-radius: 3px;
             color: #3d3d3d;
             position: absolute;
-            font-size: .8em;
+            font-size: 0.8em;
             max-width: 325px;
             display: none; /* don't display until the user mouses over a bridge */
             text-align: left;
@@ -129,33 +133,35 @@
             display: block;
             clear: both;
         }
+        
     
     /* Details Panel */
         
         #detailsPanel {
-            margin: 25px 0 0 0;          
-            font-size: 0.925em;
+            position: absolute;
+            margin: 20px 0 0 0;          
             display: none;  /* don't display until the user clicks a bridge */
             height: 70%;
         }
         
         #detailsPanelContent {
-            overflow-y: auto;
-            padding-bottom: 10px;
+            overflow-y: auto; 
+            margin-top: -5px;
+            margin-bottom: -5px;
         }
         
-        #section{
+        .section{
             display:inline-block;
             width:100%;
             background: #3d3d3d;
         }        
         
         #detailsPanel h1 {
-            max-height: 100px;
             float: left;
             display: inline;
             margin-right: 30px;
             z-index: 99;
+            font-size: 1.1em;            
         }
         
         #closeButton {
@@ -164,25 +170,23 @@
             height: 16px;
             left: 31%;
             display: inline;
-            padding-top: 12px;
+            padding-top: 11px;
             position: fixed;
         }        
             
         #detailsPanel p {
             text-align: left;
-            margin: 8px 0px 0px; 
+            margin: 8px 0px 15px; 
         }        
         
         #detailsPanel p .imageSource {
             margin-left: 6.5%;
-            margin-top: -20x;
             font-size: 0.77em;
         }
         
         #detailsPanel p .description {
             margin-top: -10px;
-            font-size: 1.1em; 
-            margin-bottom: 10px;
+            line-height: 1.5;
         }
         
         #detailsPanel #photo {
@@ -195,6 +199,45 @@
             border: solid 1px #3d3d3d;
             color: #3d3d3d;
         }
+        
+
+    /* Marker List */
+        
+        #markerListPanel {
+            position: absolute;            
+            margin: 20px 0 0 0;          
+            height: 70%;          
+        }
+        
+        #markerListPanelContent {
+            left: -50px;
+            overflow-y: auto;
+            margin-right: 0px;
+        }        
+
+        #marker-list {        
+            font-size: 0.825em;
+            margin-top: 5px; 
+            margin-bottom: 5px;
+        }
+  
+        #marker-list li {
+            padding: 5px;
+            margin-left: -30px;
+            list-style-type: none;
+        }
+        
+        #marker-list li:hover {
+            background: #3d3d3d;
+            color: #ffd401;
+        }
+        
+        #markerListPanel h1 {
+            max-height: 100px;
+            margin-right: -1px;
+            z-index: 99;
+            font-size: 1.1em;            
+        }          
         
         
     /* Year Slider */
@@ -272,42 +315,7 @@
         .ui-autocomplete-input {
             width: 250px;
             font-size: 0.9em;
-        }   
-
-    /* Marker List */
-        
-        #markerListPanel {
-            margin: 25px 0 0 0;          
-            font-size: 0.925em;
-            height: 70%;          
-        }
-        
-        #markerListPanelContent {
-            left: -50px;
-            overflow-y: auto; 
-            margin-bottom: 25px;            
-        }        
-
-        #marker-list {        
-            font-size: 0.9em;
-            max-height: 70%; 
-        }
-  
-        #marker-list li {
-            padding: 5px;
-            margin-left: -15px;
-            list-style-type: none;
-        }
-        
-        #marker-list li:hover {
-            background: #3d3d3d;
-            color: #ffd401;
-        }
-        
-        #markerListPanel h1 {
-            max-height: 100px;
-            z-index: 99;
-        }        
+        }         
         
         
     /* Legend */
@@ -316,7 +324,7 @@
             position: absolute;
             right: 15px;
             bottom: 20px;
-            padding: 4px 4px 0px 15px;
+            padding: 4px 12px 0px 15px;
             background: white;
             border: solid 1px #999999;
             border-radius: 3px;
@@ -411,7 +419,9 @@
 
         <!-- Create the marker list div, which will display all bridges from all years -->
         <div id = markerListPanel>
-            <h1>All Bridges</h1>
+            <div class="section">
+                <h1>All Bridges</h1>
+            </div>
             <div id="markerListPanelContent">
                 <ul id='marker-list'></ul>
             </div>
@@ -419,8 +429,8 @@
         
         <!-- Create the details panel div, which will display the bridge name, year built and demolished, image, image source, and description -->
         <div id="detailsPanel">
-            <div id="section">
-                <img id="closeButton" src="icons/close.png" alt_text="close details panel">
+            <div class="section">
+                <img id="closeButton" src="icons/close.png" alt_text="Close details panel">
                 <h1>Name (Built - Demolished)</h1>              
             </div>
             <div id="detailsPanelContent">
@@ -774,7 +784,7 @@
         }
         
         // Create and display the details panel when the user clicks a bridge
-        function createDetailsPanel(bridges, e) {          
+        function createDetailsPanel(bridges, e) {           
 
             // Get the current year
             currentYear = $('.year-slider').val(); 
@@ -818,6 +828,14 @@
 
             // Populate the heading in the details panel with the bridge name for the selected feature
             $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
+            
+            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
+            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42); 
+            
+            // Recalculate the height of the details panel content if the window is resized
+            window.onresize = function() {
+                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+            }
 
             // If there is a photo for the selected feature
             if (props.Photo_Path !== "None") {
@@ -842,11 +860,8 @@
             }
 
             // Populate the description in the details panel
-            $('.description').text(props.Notes);
-            
-            // Set the height of the details panel content based on the document height, minus the height of the intro section, minus the height of the details panel heading, minus 65px            
-            $('#detailsPanelContent').height($(document).height()-$('#intro').height()-$('#section').height()-65);              
-            
+            $('.description').text(props.Notes);         
+
             // Select the close icon
             close = $('#closeButton');
 
@@ -966,8 +981,13 @@
     
         function createMarkerList(bridges, currentYear) {        
         
-            // Set the height of the marker list panel content based on the document height, minus the height of the intro section, minus the height of the marker list panel heading, minus 75px
-            $('#markerListPanelContent').height($(document).height()-$('#intro').height()-$('#markerListPanel h1').height()-75);                          
+            // Set the height of the marker list panel content based on the window height, minus the height of the intro section, minus the height of the marker list panel heading, minus padding values
+            $('#markerListPanelContent').height($(window).height()-$('#intro').height()-$('#markerListPanel h1').height()-42);
+            
+            // Recalculate the height of the marker list panel content if the window is resized
+            window.onresize = function() {
+                $('#markerListPanelContent').height($(window).height()-$('#intro').height()-$('#markerListPanel h1').height()-42);
+            }               
 
             // Loop through all the bridges
             bridges.eachLayer(function(layer) {
@@ -1049,6 +1069,14 @@
 
             // Populate the heading in the details panel with the bridge name for the selected feature
             $('#detailsPanel h1').text(props.Bridge + " (" + yearBuilt + "-" + yearDemolished + ")");
+            
+            // Set the height of the details panel content based on the window height, minus the height of the intro section, minus the height of the panel heading, minus padding values
+            $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+
+            // Recalculate the height of the details panel content if the window is resized
+            window.onresize = function() {
+                $('#detailsPanelContent').height($(window).height()-$('#intro').height()-$('#detailsPanel h1').height()-42);
+            }            
 
             // If there is a photo for the selected feature
             if (props.Photo_Path !== "None") {
