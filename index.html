@@ -1015,6 +1015,9 @@
         
         // Build the bridge details panel for the selected bridge, if accessed from the bridge list or search dropdown
         function getBridgeDetails(bridges, currentYear, layer, props) {
+            
+            // Hide the previous details panel
+            $('#detailsPanel').hide();             
                             
             // Zoom to the selected bridge at zoom level 13
             map.setView(layer.getLatLng(), 13);
