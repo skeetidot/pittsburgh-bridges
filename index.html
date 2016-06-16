@@ -656,8 +656,6 @@
         
         // When the user updates the slider, determine the current year, update the map based on bridges existing in the current year, and update the current year in the heading
         function updateYear(bridges, currentYear) {
-
-            var tooltip = $('#tooltip');
             
             // Select the current year label inside the currentYearTitle div element's span tag
             var output = $('#currentYearTitle h1 span');
@@ -930,12 +928,9 @@
 
             }
             
-            // Select the current year label inside the currentYearTitle div element's span tag
-            output = $('#currentYearTitle h1 span');
-            
             // Build the bridge status section of the legend content
             legendContent += '<h3 class="status">Bridge Status</h3>';
-            legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built within 5 years of selected year</note>';  
+            legendContent += '<span class="highlightCircle" style="background: gray; border: 5px solid yellow; width: 15px; height: 15px; margin-left: -7px; margin-top: 0px"></span><note>Built within 5 years of selected year</note>';
 
             // Add the legendContent string as HTML to the legend div
             legend.append(legendContent);
