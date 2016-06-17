@@ -30,7 +30,7 @@
 
     <!-- Load Google Fonts -->    
     <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
 
     <style>
         body {
@@ -65,9 +65,15 @@
             font-family: "Merriweather", serif;
         }
         
-        a {
+        a, a:visited {
             color: #3d3d3d;
+            font-weight: 400;
         }
+        
+        a:hover {
+            color: #3d3d3d;
+            text-decoration: underline;
+        }        
         
         #map {
             position: absolute;
@@ -232,6 +238,7 @@
             cursor: pointer;
             background: #3d3d3d;
             color: #ffd401;
+            font-weight: 400;
         }
         
         #markerListPanel h1 {
@@ -246,7 +253,7 @@
         
         #ui-controls {
             position: absolute;
-            width: 176px;
+            width: 200px;
             padding: 6px 15px 4px 15px;
             background: white;
             border-radius: 3px;
@@ -262,13 +269,13 @@
         #ui-controls .min {
             float: left;
             font-size: 1.3em;
-            margin: 2px 0 3px;
+            margin: 2px 0 2px;
         }
         
         #ui-controls .max {
             float: right;
             font-size: 1.3em;
-            margin: 2px 0 3px;
+            margin: 2px 0 2px;
         }
         
         #currentYearTitle {
