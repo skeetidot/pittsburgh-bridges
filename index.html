@@ -302,9 +302,11 @@
             z-index: 1000;
             font-family: "Open Sans", sans-serif;
         }
+        
         #search {
             padding-left: 10px;
         }
+        
         .ui-widget {
             font-family: "Open Sans", sans-serif;
             font-size: 0.8em;
@@ -423,7 +425,7 @@
         </div>
 
         <!-- Create the marker list div, which will display all bridges from all years -->
-        <div id = "markerListPanel">
+        <div id="markerListPanel">
             <div class="section">
                 <h1>All Bridges</h1>
             </div>
@@ -506,32 +508,31 @@
         var map = L.mapbox.map('map', 'mapbox.light', options);
         
         
-        // self-invoking function to place slider on map using
-        // Leaflet DomUtil
+        // Self-invoking function to place slider on map using Leaflet DomUtil
         (function() {
 
-            // create a Leaflet control object and store a reference to it in a variable
+            // Create a Leaflet control object and store a reference to it in a variable
             var sliderControl = L.control({ position: 'topleft'} );
 
-            // when we add this control object to the map
+            // When we add this control object to the map
             sliderControl.onAdd = function(map) {
 
-                // select an existing DOM element with an id of "ui-controls"
+                // Select an existing DOM element with an id of "ui-controls"
                 var slider = L.DomUtil.get("ui-controls");
 
-                    // when the user clicks on the slider element
+                    // When the user clicks on the slider element
                     L.DomEvent.addListener(slider, 'mousedown', function(e) { 
 
-                        // prevent the click event from bubbling up to the map
+                        // Prevent the click event from bubbling up to the map
                         L.DomEvent.stopPropagation(e); 
 
                     });
 
-                // return the slider from the onAdd method
+                // Return the slider from the onAdd method
                 return slider;
             }
 
-            // add the control object containing our slider element to the map
+            // Add the control object containing our slider element to the map
             sliderControl.addTo(map);
 
         })();
@@ -895,7 +896,7 @@
             }
 
             // Select the close icon
-            close = $('#closeButton');
+            var close = $('#closeButton');
 
             // When the user clicks the close icon
             close.on('click', function (e) {
@@ -1136,7 +1137,7 @@
             }
 
             // Select the close icon
-            close = $('#closeButton');
+            var close = $('#closeButton');
 
             // When the user clicks the close icon
             close.on('click', function (e) {
