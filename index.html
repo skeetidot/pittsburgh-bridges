@@ -30,7 +30,7 @@
 
     <!-- Load Google Fonts -->    
     <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,500,600,700' rel='stylesheet' type='text/css'>
 
     <style>
         body {
@@ -67,11 +67,11 @@
         
         a, a:visited {
             color: #3d3d3d;
-            font-weight: 400;
+            font-weight: 500;
         }
         
         a:hover {
-            color: #3d3d3d;
+            color: #737373; /* gray */
             text-decoration: underline;
         }        
         
@@ -110,7 +110,7 @@
         
         #tooltip span:first-child {
             font-size: 1em;
-            font-weight: bold;
+            font-weight: 600;
             text-align: left;
         } 
         
@@ -123,7 +123,7 @@
             top: 0;
             bottom: 0;
             width: 33%;
-            background: #ffea80; /* light Pittsburgh gold */
+            background: #ffee99; /* lighter Pittsburgh gold */
             border-right: 2px solid #3d3d3d;
         }
         
@@ -284,7 +284,7 @@
             left: 33%;
             top: 0;
             width: 100%;
-            background: #ffea80; /* Pittsburgh gold */
+            background: #ffea80; /* light Pittsburgh gold */
             color: #3d3d3d;
             border-left: 2px solid #3d3d3d;
             font-weight: 600;
@@ -299,7 +299,7 @@
         
         label {
             font-weight: 400;
-            font-family: Merriweather, serif;
+            font-family: "Merriweather", serif;
             width: 200px;
         }
 
@@ -320,17 +320,17 @@
         
         .ui-widget {
             font-family: "Open Sans", sans-serif;
-            font-size: 0.8em;
+            font-size: 0.825em;
             color: #3d3d3d;
             overflow-y: auto;
             overflow-x: hidden;
-            max-width: 250px;
+            max-width: 259px;
             max-height: 300px;
         }
         
         .ui-autocomplete-input {
             width: 250px;
-            font-size: 0.9em;
+            font-size: 0.825em;
         }
         
         
@@ -346,7 +346,7 @@
             border-radius: 3px;
             color: #3d3d3d;
             text-align: left;
-            font-family: "Merriweather", sans-serif;
+            font-family: "Merriweather", serif;
         }
         
         #bridgeTypeLegend h3 {
@@ -489,7 +489,6 @@
     </div>
 
     <script>
- 
         
         // Default basemap tiles
         var Esri_WorldGrayCanvas = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
@@ -993,6 +992,25 @@
             $("#search").autocomplete({
               source: bridgeArray
             });
+            
+            // Highlight the search string in the matches
+            String.prototype.replaceAt = function(index, char) {
+                return this.substr(0, index) + "<span style='font-weight:700;'>" + char + "</span>";
+            }
+
+            $.ui.autocomplete.prototype._renderItem = function(ul, item) {
+                this.term = this.term.toLowerCase();
+                var resultStr = item.label.toLowerCase();
+                var t = "";
+                while (resultStr.indexOf(this.term) != -1) {
+                    var index = resultStr.indexOf(this.term);
+                    t = t + item.label.replaceAt(index, item.label.slice(index, index + this.term.length));
+                    resultStr = resultStr.substr(index + this.term.length);
+                    item.label = item.label.substr(index + this.term.length);
+                }
+                return $("<li></li>").data("item.autocomplete", item).append("<a>" + t + item.label + "</a>").appendTo(ul);
+
+            };            
             
             // When the user chooses a value from the dropdown list
             $("#search").on("autocompleteselect", function(event, ui) {
